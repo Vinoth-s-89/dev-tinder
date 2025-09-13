@@ -15,6 +15,8 @@
   "author": "Vinoth S",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mongoose": "^8.18.1",
+    "validator": "^13.15.15"
   }
 }
