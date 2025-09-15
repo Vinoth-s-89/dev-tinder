@@ -1,8 +1,10 @@
 const express = require("express");
+const connectDB = require("./config/database");
+const User = require("./models/users");
+const { signUpValidator, validateLogin } = require("./validators/validate");
+const bctypt = require("bcrypt");
 
 const app = express();
-
-const connectDB = require("./config/database");
 
 connectDB().then(() => {
   app.listen(3000, () => {
@@ -16,22 +18,50 @@ app.get("/", (req, res) => {
   res.status(200).send("App was started successfully");
 });
 
-const User = require("./models/users");
-
-const validateMiddleware = (req, res, next) => {
-  const skills = req.body.skills;
-  if (!Array.isArray(skills) || skills.length === 0) {
-    res.status(400).send({ message: "Skills must be a non-empty array" });
-  } else if (skills.length > new Set(skills).size) {
-    res.status(400).send({ message: "Skills must not contain duplicates" });
-  } else {
-    next();
-  }
-};
-
-app.post("/user", validateMiddleware, async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
-    const newUser = new User(req.body);
+    const userData = req.body;
+    signUpValidator(userData);
+    userData.password = await bctypt.hash(userData.password, 10);
+    const newUser = new User({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      password: userData.password,
+    });
+    const response = await newUser.save();
+    res
+      .status(201)
+      .send({ message: "Successfully signed up", userId: response._id }); //201 Created
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const loginData = req.body;
+    validateLogin(loginData);
+    const user = await User.findOne({ email: loginData.email });
+    if (!user) {
+      throw new Error("Invalid login credentials");
+    }
+    const isPasswordMatch = await bctypt.compare(
+      loginData.password,
+      user.password
+    );
+    if (!isPasswordMatch) {
+      throw new Error("Invalid login credentials");
+    }
+    res.status(200).send({ message: "Login successfully" });
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+});
+
+app.post("/user", async (req, res) => {
+  try {
+    const newUser = new User();
     const response = await newUser.save();
     res
       .status(201)
