@@ -5,7 +5,7 @@ const userAuth = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     if (!token) {
-      throw new Error("Unauthorized please login");
+      throw new Error("Invalid token login again");
     }
     const decoded = jsonwebtoken.verify(token, "mysecretkey");
     const user = await User.findById(decoded._id).select({
