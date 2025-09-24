@@ -2,6 +2,7 @@ const express = require("express");
 const { signUpValidator, validateLogin } = require("../validators/validate");
 const bctypt = require("bcrypt");
 const User = require("../models/users");
+const { userAuth } = require("../middlewares/authMiddlewares");
 
 const router = express.Router();
 
@@ -50,6 +51,17 @@ router.post("/logout", (req, res) => {
     res.cookie("token", null, { expires: new Date(Date.now()) });
     res.status(200).send({ message: "Logout successfully" });
   } catch (error) {}
+});
+
+router.patch("/changePassword", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    loggedInUser.password = await bctypt.hash(req.body.password, 10);
+    await loggedInUser.save();
+    res.send({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 });
 
 module.exports = router;

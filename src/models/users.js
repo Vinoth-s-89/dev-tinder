@@ -25,6 +25,13 @@ const userSchema = new mongoose.Schema({
       }
     },
   },
+  gender: {
+    type: String,
+    enum: {
+      values: ["male", "female", "other"],
+      message: "{VALUE} is a invalid gender value",
+    },
+  },
   password: {
     type: String,
     required: [true, "Password is required"],
@@ -34,15 +41,19 @@ const userSchema = new mongoose.Schema({
   },
   location: {
     type: String,
+    trim: true,
   },
   skills: {
     type: [String],
   },
   about: {
     type: String,
+    trim: true,
+    maxLength: [200, "About must be at most 200 characters"],
   },
   profileUrl: {
     type: String,
+    trim: true,
   },
 });
 
@@ -54,7 +65,7 @@ userSchema.index(
 userSchema.methods.getJWTToken = function () {
   const user = this;
   const token = jsonwebtoken.sign({ _id: user._id }, "mysecretkey", {
-    expiresIn: "1h",
+    expiresIn: "8h",
   });
   return token;
 };

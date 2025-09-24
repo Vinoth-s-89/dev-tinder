@@ -32,4 +32,23 @@ const validateLogin = (loginData) => {
   }
 };
 
-module.exports = { signUpValidator, validateLogin };
+const validateProfileEdit = (editData) => {
+  const allowedEdits = [
+    "firstName",
+    "lastName",
+    "age",
+    "location",
+    "skills",
+    "about",
+    "profileUrl",
+    "gender",
+  ];
+  const notAllowedField = Object.keys(editData).find(
+    (key) => !allowedEdits.includes(key)
+  );
+  if (notAllowedField) {
+    throw new Error(`${notAllowedField} is not allowed to edit`);
+  }
+};
+
+module.exports = { signUpValidator, validateLogin, validateProfileEdit };
