@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
 const routes = [
   require("./routes/auth"),
   require("./routes/profile"),
-  require("./routes/connection"),
+  require("./routes/requests"),
 ];
 
 app.use(routes);

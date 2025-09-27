@@ -5,9 +5,9 @@ const { validateProfileEdit } = require("../validators/validate");
 
 router.get("/profile/view", userAuth, async (req, res) => {
   try {
-    res.status(200).send(req.user);
+    return res.status(200).send(req.user);
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    return res.status(400).send({ message: error.message });
   }
 });
 
@@ -19,11 +19,11 @@ router.patch("/profile/update", userAuth, async (req, res) => {
       loggedInUser[key] = req.body[key];
     });
     await loggedInUser.save();
-    res.status(200).send({
+    return res.status(200).send({
       message: `${loggedInUser.firstName} profile updated successfully`,
     });
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    return res.status(400).send({ message: error.message });
   }
 });
 

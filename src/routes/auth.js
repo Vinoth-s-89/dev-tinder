@@ -18,11 +18,11 @@ router.post("/signup", async (req, res) => {
       password: userData.password,
     });
     const response = await newUser.save();
-    res
+    return res
       .status(201)
       .send({ message: "Successfully signed up", userId: response._id }); //201 Created
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    return res.status(400).send({ message: error.message });
   }
 });
 
@@ -40,16 +40,16 @@ router.post("/login", async (req, res) => {
     }
     const token = user.getJWTToken();
     res.cookie("token", token);
-    res.status(200).send({ message: "Login successfully" });
+    return res.status(200).send({ message: "Logged in successfully" });
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    return res.status(400).send({ message: error.message });
   }
 });
 
 router.post("/logout", (req, res) => {
   try {
     res.cookie("token", null, { expires: new Date(Date.now()) });
-    res.status(200).send({ message: "Logout successfully" });
+    return res.status(200).send({ message: "Logout successfully" });
   } catch (error) {}
 });
 
@@ -58,9 +58,9 @@ router.patch("/changePassword", userAuth, async (req, res) => {
     const loggedInUser = req.user;
     loggedInUser.password = await bctypt.hash(req.body.password, 10);
     await loggedInUser.save();
-    res.send({ message: "Password updated successfully" });
+    return res.send({ message: "Password updated successfully" });
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    return res.status(500).send({ message: error.message });
   }
 });
 
