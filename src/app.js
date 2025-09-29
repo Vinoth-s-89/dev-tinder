@@ -22,6 +22,7 @@ const routes = [
   require("./routes/auth"),
   require("./routes/profile"),
   require("./routes/requests"),
+  require("./routes/user"),
 ];
 
 app.use(routes);

@@ -30,8 +30,15 @@ router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
     });
 
     if (hasDuplicate) throw new Error("Duplicate entry");
-    await new ConnectionRequest({ fromUserId, toUserId, status }).save();
-    return res.status(200).send({ message: `${status} successfully` });
+    const connectionRequest = await new ConnectionRequest({
+      fromUserId,
+      toUserId,
+      status,
+    });
+    await connectionRequest.save();
+    return res
+      .status(200)
+      .send({ message: `${status} successfully`, data: connectionRequest });
   } catch (error) {
     return res.status(400).send({ message: error.message });
   }
@@ -64,7 +71,9 @@ router.post(
 
       await connectionRequest.save();
 
-      return res.status(200).json({ message: "Request was " + status });
+      return res
+        .status(200)
+        .json({ message: "Request was " + status, data: connectionRequest });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
