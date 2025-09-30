@@ -1,25 +1,28 @@
 const mongoose = require("mongoose");
 
-const schema = new mongoose.Schema({
-  fromUserId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "User",
-  },
-  toUserId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "User",
-  },
-  status: {
-    type: String,
-    enum: {
-      values: ["ignored", "interested", "accepted", "rejected"],
-      message: "{VALUE} is invalid status",
+const schema = new mongoose.Schema(
+  {
+    fromUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
-    required: true,
+    toUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    status: {
+      type: String,
+      enum: {
+        values: ["ignored", "interested", "accepted", "rejected"],
+        message: "{VALUE} is invalid status",
+      },
+      required: true,
+    },
   },
-});
+  { timestamps: true }
+);
 
 schema.index({ fromUserId: 1, toUserId: 1 });
 

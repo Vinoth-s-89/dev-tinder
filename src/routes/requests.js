@@ -7,6 +7,7 @@ const { userAuth } = require("../middlewares/authMiddlewares");
 router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
   try {
     const fromUserId = req.user._id;
+    const loggedInUser = req.user;
     const { toUserId, status } = req.params;
     const allowedStatus = ["ignored", "interested"];
     if (!allowedStatus.includes(status)) {
@@ -36,9 +37,15 @@ router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
       status,
     });
     await connectionRequest.save();
-    return res
-      .status(200)
-      .send({ message: `${status} successfully`, data: connectionRequest });
+    if (status === "interested")
+      return res.status(200).send({
+        message: `${loggedInUser.firstName} ${loggedInUser.lastName} intested in ${user.firstName} ${user.lastName}`,
+        data: connectionRequest,
+      });
+    return res.status(200).send({
+      message: `${loggedInUser.firstName} ${loggedInUser.lastName} ignored ${user.firstName} ${user.lastName}'s profile`,
+      data: connectionRequest,
+    });
   } catch (error) {
     return res.status(400).send({ message: error.message });
   }
