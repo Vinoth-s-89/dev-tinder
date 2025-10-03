@@ -40,7 +40,9 @@ router.post("/login", async (req, res) => {
     }
     const token = user.getJWTToken();
     res.cookie("token", token);
-    return res.status(200).send({ message: "Logged in successfully" });
+    return res
+      .status(200)
+      .send({ message: "Logged in successfully", data: user });
   } catch (error) {
     return res.status(400).send({ message: error.message });
   }
