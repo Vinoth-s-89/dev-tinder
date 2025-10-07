@@ -48,6 +48,9 @@ router.get("/user/connections", userAuth, async (req, res) => {
 router.get("/user/feed", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
     const hiddenRequests = await ConnectionRequest.find({
       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
     }).select(["fromUserId", "toUserId"]);
@@ -56,14 +59,16 @@ router.get("/user/feed", userAuth, async (req, res) => {
       hiddenUsers.add(connectionReq.fromUserId);
       hiddenUsers.add(connectionReq.toUserId);
     });
-    console.log(hiddenRequests);
 
     const feeds = await User.find({
       $and: [
         { _id: { $nin: Array.from(hiddenUsers) } },
         { _id: { $ne: loggedInUser._id } },
       ],
-    }).select("firstName lastName email skills profileUrl about location age");
+    })
+      .select("firstName lastName email skills profileUrl about location age")
+      .skip(skip)
+      .limit(limit);
     return res.status(200).json({ data: feeds });
   } catch (error) {
     return res.status(500).send({ message: error.message });
