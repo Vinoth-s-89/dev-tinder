@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: {
-        values: ["male", "female", "other"],
+        values: ["male", "female", "others"],
         message: "{VALUE} is a invalid gender value",
       },
     },
@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema(
     about: {
       type: String,
       trim: true,
-      maxLength: [200, "About must be at most 200 characters"],
+      maxLength: [250, "About must be at most 250 characters"],
     },
     profileUrl: {
       type: String,

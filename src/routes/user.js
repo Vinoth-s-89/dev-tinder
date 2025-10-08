@@ -69,7 +69,7 @@ router.get("/user/feed", userAuth, async (req, res) => {
       .select("firstName lastName email skills profileUrl about location age")
       .skip(skip)
       .limit(limit);
-    return res.status(200).json({ data: feeds });
+    return res.status(200).json(feeds);
   } catch (error) {
     return res.status(500).send({ message: error.message });
   }

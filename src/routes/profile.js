@@ -21,6 +21,7 @@ router.patch("/profile/update", userAuth, async (req, res) => {
     await loggedInUser.save();
     return res.status(200).send({
       message: `${loggedInUser.firstName} profile updated successfully`,
+      data: loggedInUser,
     });
   } catch (error) {
     return res.status(400).send({ message: error.message });
