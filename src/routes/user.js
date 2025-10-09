@@ -4,7 +4,16 @@ const { userAuth } = require("../middlewares/authMiddlewares");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/users");
 
-const USER_FIELDS = ["_id", "firstName", "lastName", "email", "profileUrl"];
+const USER_FIELDS = [
+  "_id",
+  "firstName",
+  "lastName",
+  "email",
+  "profileUrl",
+  "age",
+  "gender",
+  "about",
+];
 
 router.get("/user/request/received", userAuth, async (req, res) => {
   try {
@@ -14,9 +23,21 @@ router.get("/user/request/received", userAuth, async (req, res) => {
       status: "interested",
     })
       .populate("fromUserId", USER_FIELDS)
-      .select("-__v");
+      .select("_id");
 
-    return res.status(200).send(requests);
+    const data = requests.map(({ _id, fromUserId }) => ({
+      _id,
+      firstName: fromUserId.firstName,
+      lastName: fromUserId.lastName,
+      email: fromUserId.email,
+      profileUrl: fromUserId.profileUrl,
+      age: fromUserId.age,
+      gender: fromUserId.gender,
+      about: fromUserId.about,
+      userId: fromUserId._id,
+    }));
+
+    return res.status(200).send(data);
   } catch (error) {
     return res.status(500).send({ message: error.message });
   }
@@ -34,10 +55,11 @@ router.get("/user/connections", userAuth, async (req, res) => {
       .populate("fromUserId", USER_FIELDS)
       .populate("toUserId", USER_FIELDS);
     const data = connections.map((con) => {
-      if (con.fromUserId.toString() === loggedInUser._id.toString()) {
-        return con.toUserId;
+      const { fromUserId, toUserId } = con;
+      if (fromUserId._id.toString() === loggedInUser._id.toString()) {
+        return toUserId;
       }
-      return con.fromUserId;
+      return fromUserId;
     });
     return res.status(200).send(data);
   } catch (error) {

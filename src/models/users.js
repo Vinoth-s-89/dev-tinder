@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "First name is required"],
       trim: true,
-      minLength: [4, "First name must be at least 4 characters"],
+      minLength: [3, "First name must be at least 4 characters"],
       maxLength: [20, "First name must be at most 20 characters"],
     },
     lastName: {
