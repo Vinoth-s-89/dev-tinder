@@ -1,0 +1,96 @@
+1. Create AWS instance.
+
+2. Connect to the instance via commandline.
+
+3. Clone the project.
+
+4. cd project.
+
+5. install all dependencies (npm install).
+
+For front end project.
+
+6. create build (npm run build).
+
+Create web server using Nginx 
+
+7. sudo apt update => update system
+
+8. sudo apt install nginx
+
+Start nginx web server
+
+9. sudo systemctl start nginx
+
+10. sudo systemctl enable nginx
+
+Copt code from dist to nginx web server folder
+
+11. redirect to root location using (cd command)
+
+12. sudo scp -r dist/* /var/www/html/
+
+sudo => for permission,
+scp -r dist/* => for copying all files
+
+13. Enable port 80 of ngnix web server in aws in Inbound rules.
+
+14. Access the app via public ip of the aws instance.
+
+
+
+To Deploy Backend
+
+1. cd to backend project
+
+2. install dependencies (npm install).
+
+3. enable backend port on aws Inbound rules.
+
+4. enable Ip in mongo server.
+
+5. install pm2 => npm install pm2 -g (PM2 is a daemon process manager that will help you manage and keep your application online 24/7).
+
+6. pm2 start npm --name "dev-tinder" -- start
+
+7. pm2 list, pm2 stop name, pm delete name
+
+What happens behind the scenes is nginx created we server and by default listening on port 80 frontend was running on this port.
+
+http://16.171.147.98/ => front end was running on that port
+
+http://16.171.147.98:3000 => backend was running on that port
+
+Now we going to by pass :3000 => /api/ for that we have edit default nginx configuration file. Using the following command
+
+8. sudo nano /etc/nginx/sites-available/default
+
+sudo => to access root
+
+nano => to edit the files
+
+/etc/nginx/sites-available/default => location of the config file
+
+If we run the command config file will gets opened in terminal we can edit on that file. Because the nginx was sitting infront of the server we can do by pass operations here.
+
+9. server_name http://16.171.147.98/;
+
+location /api/ {
+        proxy_pass http://localhost:3000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+10. sudo systemctl restart nginx => to restart the nginx server it was very important step.
+
+after edit press ctrl + x  
+press y to save and the hit Enter to exit
+
+
+
+Now if we access /api/ the backend will be opened
+
+
