@@ -3,6 +3,7 @@ const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/users");
 const router = express.Router();
 const { userAuth } = require("../middlewares/authMiddlewares");
+// const { sendEmail } = require("../utils/sendEmail");
 
 router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
   try {
@@ -37,6 +38,13 @@ router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
       status,
     });
     await connectionRequest.save();
+    // await sendEmail(
+    //   "vinothpuvi872001@gmail.com",
+    //   "devtinder@vinothcodes.in",
+    //   `${loggedInUser.firstName} was interested in ${user.firstName}`,
+    //   "Interest requets arrived for you"
+    // );
+
     if (status === "interested")
       return res.status(200).send({
         message: `${loggedInUser.firstName} ${loggedInUser.lastName} intested in ${user.firstName} ${user.lastName}`,

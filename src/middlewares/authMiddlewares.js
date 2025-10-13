@@ -7,7 +7,7 @@ const userAuth = async (req, res, next) => {
     if (!token) {
       return res.status(401).send("Please login !!!");
     }
-    const decoded = jsonwebtoken.verify(token, "mysecretkey");
+    const decoded = jsonwebtoken.verify(token, process.env.PASSWORD_SECRET_KEY);
     const user = await User.findById(decoded._id).select({
       password: 0,
       __v: 0,

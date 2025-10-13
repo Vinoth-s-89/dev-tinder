@@ -1,5 +1,4 @@
-const connectionUrl =
-  "mongodb+srv://vinoths:Vinoth89@nodelearning.qgbobqk.mongodb.net/devtinder";
+const connectionUrl = process.env.DATABASE_CONNECTION_URL;
 
 const mongoose = require("mongoose");
 

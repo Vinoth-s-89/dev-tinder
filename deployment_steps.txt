@@ -86,8 +86,29 @@ location /api/ {
 
 10. sudo systemctl restart nginx => to restart the nginx server it was very important step.
 
+11. In frontend if we change http://localhost:3000 => /api the ip address will gets automatically taken.
+
 after edit press ctrl + x  
 press y to save and the hit Enter to exit
+
+Domain Name and SSL
+
+1. Purchase a domain from godaddy.
+2. Use cloudflare to configure you domain for you have change default go daddy name providers to cloudflare name providers.
+3. After couldflare name servers successfully gets activated.
+4. Create and map you aws machine nginx server ip to your domain name.
+5. Go to ssl section and configure ssl for your domain name.
+
+
+Sending Email using AWS SES
+
+Go to IAM
+1. Create IAM user.
+2. Give full mail access to that user.
+3. Generate secret key and access key.
+Go to SES
+4. Create a Identity in SES.
+5. Verify domain name and email as will in Identities.
 
 
 
