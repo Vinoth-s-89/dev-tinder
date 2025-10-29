@@ -73,7 +73,7 @@ userSchema.methods.getJWTToken = function () {
     { _id: user._id },
     process.env.PASSWORD_SECRET_KEY,
     {
-      expiresIn: "8h",
+      expiresIn: "20h",
     }
   );
   return token;

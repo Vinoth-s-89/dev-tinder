@@ -4,6 +4,7 @@ const express = require("express");
 const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const jobs = require("./utils/scheduleJobs");
 
 const app = express();
 

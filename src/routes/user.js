@@ -97,4 +97,27 @@ router.get("/user/feed", userAuth, async (req, res) => {
   }
 });
 
+router.get("/user/details/:userId", userAuth, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = req.user;
+    const connection = await ConnectionRequest.findOne({
+      $or: [
+        { fromUserId: user._id, toUserId: userId },
+        { fromUserId: userId, toUserId: user._id },
+      ],
+    }).populate("fromUserId toUserId", USER_FIELDS);
+    if (!connection) {
+      return res.status(404).json({ message: "Connection not found" });
+    }
+    if (connection.fromUserId._id.toString() === user._id.toString()) {
+      return res.status(200).json(connection.toUserId);
+    } else {
+      return res.status(200).json(connection.fromUserId);
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
