@@ -39,7 +39,9 @@ router.post("/login", async (req, res) => {
       throw new Error("Invalid login credentials");
     }
     const token = user.getJWTToken();
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
     return res
       .status(200)
       .send({ message: "Logged in successfully", data: user });
