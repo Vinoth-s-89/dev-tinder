@@ -45,6 +45,7 @@ const routes = [
   require("./routes/profile"),
   require("./routes/requests"),
   require("./routes/user"),
+  require("./routes/chat"),
 ];
 
 app.use(routes);
