@@ -15,6 +15,7 @@ const userAuth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    res.cookie("token", null, { expires: new Date(Date.now()) });
     return res.status(401).send({ message: error.message });
   }
 };
