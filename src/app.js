@@ -6,7 +6,7 @@ const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 // const jobs = require("./utils/scheduleJobs");
-
+const fileUpload = require("express-fileupload");
 const app = express();
 
 const httpServer = createServer(app);
@@ -21,6 +21,12 @@ app.use(
   cors({
     origin: "http://localhost:4000",
     credentials: true,
+  })
+);
+
+app.use(
+  fileUpload({
+    limits: 10 * 1024 * 1024,
   })
 );
 
