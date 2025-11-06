@@ -51,4 +51,21 @@ const validateProfileEdit = (editData) => {
   }
 };
 
-module.exports = { signUpValidator, validateLogin, validateProfileEdit };
+const validatePushSubscription = (subscription) => {
+  if (
+    !subscription ||
+    !subscription?.endpoint?.trim() ||
+    !subscription.keys ||
+    !subscription.keys?.p256dh?.trim() ||
+    !subscription.keys?.auth?.trim()
+  ) {
+    throw new Error("Invalid push subscription object");
+  }
+};
+
+module.exports = {
+  signUpValidator,
+  validateLogin,
+  validateProfileEdit,
+  validatePushSubscription,
+};

@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 // const jobs = require("./utils/scheduleJobs");
 const fileUpload = require("express-fileupload");
+const webpush = require("web-push");
 const app = express();
 
 const httpServer = createServer(app);
@@ -45,6 +46,12 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.status(200).send("App was started successfully");
 });
+
+webpush.setVapidDetails(
+  "mailto:vinothpuvi872001@gmail.com",
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
 
 const routes = [
   require("./routes/auth"),

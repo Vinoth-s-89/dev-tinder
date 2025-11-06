@@ -1,6 +1,8 @@
 const { Server } = require("socket.io");
 const crypto = require("crypto");
+const webpush = require("web-push");
 const { Message, Conversation } = require("../models/chat");
+const PushSubscriptionModel = require("../models/PushSubscription");
 
 function getRoomId(userId, targetUserId) {
   const roomId = [userId, targetUserId].sort().join("_");
@@ -43,14 +45,33 @@ function initializeSocketServer(httpServer) {
           message,
         });
         await messageInstance.save();
-        console.log({
-          message,
-          senderId,
-        });
-
         io.to(roomId).emit("messageReceived", {
           message,
           senderId,
+        });
+        const subscriptions = await PushSubscriptionModel.find({
+          userId: targetUserId,
+        });
+        const payload = JSON.stringify({
+          title: senderId.name,
+          body: message,
+        });
+        subscriptions.forEach((sub) => {
+          let subscription = {
+            endpoint: sub.endpoint,
+            keys: {
+              p256dh: sub.p256dh,
+              auth: sub.auth,
+            },
+          };
+          webpush.sendNotification(subscription, payload).catch(async (err) => {
+            console.log("Failed:", err.statusCode);
+            if (err.statusCode === 410 || err.statusCode === 404) {
+              await PushSubscriptionModel.deleteOne({
+                endpoint: sub.endpoint,
+              });
+            }
+          });
         });
         console.log(
           `Message from User ${senderId._id} to User ${targetUserId} in room ${roomId}: ${message}`

@@ -1,8 +1,13 @@
 const express = require("express");
-const { signUpValidator, validateLogin } = require("../validators/validate");
+const {
+  signUpValidator,
+  validateLogin,
+  validatePushSubscription,
+} = require("../validators/validate");
 const bctypt = require("bcrypt");
 const User = require("../models/users");
 const { userAuth } = require("../middlewares/authMiddlewares");
+const PushSubscriptionModel = require("../models/PushSubscription");
 
 const router = express.Router();
 
@@ -50,11 +55,19 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", async (req, res) => {
   try {
+    const endpoint = req.cookies.endpoint;
+    if (endpoint)
+      await PushSubscriptionModel.deleteOne({
+        endpoint,
+      });
     res.cookie("token", null, { expires: new Date(Date.now()) });
+    res.cookie("endpoint", null, { expires: new Date(Date.now()) });
     return res.status(200).send({ message: "Logout successfully" });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 router.patch("/changePassword", userAuth, async (req, res) => {
@@ -65,6 +78,35 @@ router.patch("/changePassword", userAuth, async (req, res) => {
     return res.send({ message: "Password updated successfully" });
   } catch (error) {
     return res.status(500).send({ message: error.message });
+  }
+});
+
+router.post("/subscribe", userAuth, async (req, res) => {
+  try {
+    validatePushSubscription(req.body);
+    const userId = req.user._id;
+    const subscription = req.body;
+    const hasSubcription = await PushSubscriptionModel.findOne({
+      userId,
+      endpoint: subscription.endpoint,
+    });
+    if (hasSubcription) {
+      return res.status(200).json({ message: "Already Subscribed" });
+    }
+    const newSubscription = new PushSubscriptionModel({
+      userId,
+      expirationTime: subscription.expirationTime,
+      endpoint: subscription.endpoint,
+      auth: subscription?.keys?.auth,
+      p256dh: subscription?.keys?.p256dh,
+    });
+    await newSubscription.save();
+    res.cookie("endpoint", subscription.endpoint, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+    return res.status(200).json({ message: "Subcribed successfully !!!" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 });
 
