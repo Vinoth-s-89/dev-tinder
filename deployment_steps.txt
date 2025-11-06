@@ -88,6 +88,10 @@ location /api/ {
 
 11. In frontend if we change http://localhost:3000 => /api the ip address will gets automatically taken.
 
+12. For .env configuration we have to create and modify new .env file in the server.
+
+13. Using sudo nano .env modify and save using ctrl + x , y and Enter.
+
 after edit press ctrl + x  
 press y to save and the hit Enter to exit
 
